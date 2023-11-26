@@ -1,0 +1,25 @@
+version: '3.3'
+services:
+  
+  mediamtx:
+    container_name: rtsp
+    environment:
+      - MTX_PROTOCOLS=tcp
+      - MTX_RTSPADDRESS=:554
+      - MTX_API=yes
+      - MTX_APIADDRESS=127.0.0.1:9997
+    ports:
+      - '8554:8554'
+    #image: bluenviron/mediamtx
+    image: bluenviron/mediamtx:latest-ffmpeg
+    network_mode: host
+  timer:
+    container_name: timer
+    image: jrottenberg/ffmpeg
+    volumes:
+      - ./:/video
+    working_dir: /video
+    command: -stream_loop -1 -re -i timer.mp4 -c:v libx264 -preset ultrafast -tune zerolatency -c:a aac -strict experimental -f rtsp rtsp://localhost/timer
+    network_mode: host
+    depends_on:
+      - mediamtx
