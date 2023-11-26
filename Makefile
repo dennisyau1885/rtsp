@@ -1,5 +1,11 @@
-SHELL = bash
-HTTP_200 = grep "HTTP/.* 200 OK"
+SHELL         = bash
+RTSP          = rtsp://localhost:554
+API           = http://localhost:9997/v3
+CURL          = curl 2>&1 -v -s
+CONTENT_TYPE  = -H "Content-Type: application/json"
+HTTP_200      = grep "HTTP/.* 200 OK"
+RTSP_200      = grep "RTSP/.* 200 OK"
+
 default: restart
 
 up:
@@ -16,21 +22,18 @@ sleep:
 test: rtsp post list count_timer count_restream delete
 
 rtsp:
-	curl -v -X DESCRIBE rtsp://localhost:554 2>&1 \
-	| grep "RTSP.* 200 OK"
+	$(CURL) -X DESCRIBE $(RTSP) | $(RTSP_200)
 
 list:
-	curl -s http://localhost:9997/v3/paths/list | jq '.items[] | { name, readers }'
+	curl -s $(API)/paths/list | jq '.items[] | { name, readers }'
 
 count_timer count_restream:
-	@curl -s localhost:9997/v3/paths/list \
+	@curl -s $(API)/paths/list \
 	| jq --arg PATHNAME "$$(echo $@ | cut -d"_" -f2)" \
 	  '.items[] | select(.name == $$PATHNAME) | .readers | length'
 
 post:
-	curl -s -v -X POST -H "Content-Type: application/json" -d @post_path.json http://localhost:9997/v3/config/paths/add/restream 2>&1 \
-	| $(HTTP_200)
+	$(CURL) $(CONTENT_TYPE) -X POST -d @path.json $(API)/config/paths/add/restream | $(HTTP_200)
 
 delete:
-	curl -s -v -X DELETE http://localhost:9997/v3/config/paths/delete/restream 2>&1 \
-	| $(HTTP_200)
+	$(CURL) -X DELETE $(API)/config/paths/delete/restream | $(HTTP_200)
