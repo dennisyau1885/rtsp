@@ -1,0 +1,5 @@
+{
+  "source": "rtsp://localhost/timer",
+  "runOnRead": "ffmpeg -i rtsp://localhost/timer -c copy -f rtsp rtsp://localhost/restream",
+  "runOnReadRestart": true
+}
