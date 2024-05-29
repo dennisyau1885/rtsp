@@ -38,7 +38,10 @@ count_timer count_restream:
 
 post:
 	# Add 'restream'
-	$(CURL) $(CONTENT_TYPE) -X POST -d @restream.json $(API)/config/paths/add/restream | $(HTTP_200)
+	$(CURL) $(CONTENT_TYPE) -X POST -d @restream.json $(API)/config/paths/add/restream  | $(HTTP_200)
+	$(CURL) $(CONTENT_TYPE) -X POST -d @restream.json $(API)/config/paths/add/restream2 | $(HTTP_200)
+	$(CURL) $(CONTENT_TYPE) -X POST -d @restream.json $(API)/config/paths/add/restream3 | $(HTTP_200)
+	$(CURL) $(CONTENT_TYPE) -X POST -d @restream.json $(API)/config/paths/add/restream4 | $(HTTP_200)
 
 get:
 	# Get 'restream' info
@@ -49,4 +52,12 @@ delete:
 	$(CURL) -X DELETE $(API)/config/paths/delete/restream | $(HTTP_200)
 
 mediamtx.yml:
-	curl https://raw.githubusercontent.com/bluenviron/mediamtx/main/mediamtx.yml -o mediamtx.yml	
+	curl https://raw.githubusercontent.com/bluenviron/mediamtx/main/mediamtx.yml -o mediamtx.yml
+
+playback_list:
+	curl 'http://localhost:9996/list?path=timer' |jq .
+
+playback_playlist:
+	curl -s 'http://localhost:9996/list?path=timer' |jq -r .[0].start >/tmp/playback_play1st.tmp
+	echo "http://localhost:9996/get?path=timer&start=$$(cat /tmp/playback_play1st.tmp)&duration=5"
+
