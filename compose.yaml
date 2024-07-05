@@ -25,3 +25,10 @@ services:
     volumes:
       - ./:/video
     working_dir: /video
+  nginx:
+    container_name: recordings
+    image: dceoy/nginx-autoindex
+    volumes:
+      - ./recordings:/var/lib/nginx/html
+    ports:
+      - 9999:80

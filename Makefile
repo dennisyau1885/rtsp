@@ -54,10 +54,6 @@ delete:
 mediamtx.yml:
 	curl https://raw.githubusercontent.com/bluenviron/mediamtx/main/mediamtx.yml -o mediamtx.yml
 
-playback_list:
-	curl 'http://localhost:9996/list?path=timer' |jq .
-
-playback_playlist:
-	curl -s 'http://localhost:9996/list?path=timer' |jq -r .[0].start >/tmp/playback_play1st.tmp
-	echo "http://localhost:9996/get?path=timer&start=$$(cat /tmp/playback_play1st.tmp)&duration=5"
+recordings_list:
+	curl -s $(API)/recordings/list | jq .items[] -c
 
